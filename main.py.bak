@@ -94,8 +94,14 @@ if __name__ == '__main__':
         if args.correct_color:
             warped_dst_img = warp_image_3d(dst_face, dst_points[:48], src_points[:48], src_face.shape[:2])
             src_face = correct_colours(warped_dst_img, src_face, src_points)
+            value = 15
+            #src_face  = cv2.bilateralFilter(src_face,0,50,3)
+            #src_face = np.uint8(np.clip((1.1 * src_face - 10), 0, 255))
+            #src_face = correct_colours(warped_dst_img, src_face, src_points)
+            
         # Warp
         warped_src_face = warp_image_2d(src_face, transformation_from_points(dst_points, src_points), (h, w, 3))
+        
 
     ## Mask for blending
     mask = mask_from_points((h, w), dst_points)
@@ -111,19 +117,31 @@ if __name__ == '__main__':
     ## Shrink the mask
     kernel = np.ones((10, 10), np.uint8)
     mask = cv2.erode(mask, kernel, iterations=1)
+    
     ##Poisson Blending
     r = cv2.boundingRect(mask)
     center = ((r[0] + int(r[2] / 2), r[1] + int(r[3] / 2)))
+    FEATHER_AMOUNT = 11
+    mask = cv2.GaussianBlur(mask, (1,1), 0, 0, cv2.BORDER_DEFAULT)
     output = cv2.seamlessClone(warped_src_face, dst_face, mask, center, cv2.NORMAL_CLONE)
+    #cv2.imshow("warped_src_face", warped_src_face)
+    #cv2.imshow("dst_face", dst_face)
+    #cv2.imshow("mask", mask)
+
+    #cv2.imshow("From", output)
 
     x, y, w, h = dst_shape
     dst_img_cp = dst_img.copy()
     dst_img_cp[y:y+h, x:x+w] = output
     output = dst_img_cp
 
+
+
     dir_path = os.path.dirname(args.out)
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
+
+    
 
     cv2.imwrite(args.out, output)
 

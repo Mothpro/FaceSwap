@@ -1,6 +1,6 @@
 import cv2
-PREDICTOR_PATH = "models/shape_predictor_68_face_landmarks.dat"
-CASCADE_PATH="models/haarcascade_frontalface_default.xml"
+PREDICTOR_PATH = "/data/auto/python/faceswap/models/shape_predictor_68_face_landmarks.dat"
+CASCADE_PATH="/data/auto/python/faceswap/models/haarcascade_frontalface_default.xml"
 OPENCV_OBJECT_TRACKERS = {
     "kcf": cv2.TrackerKCF_create,
     "boosting": cv2.TrackerBoosting_create,
